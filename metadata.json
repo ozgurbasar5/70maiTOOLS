@@ -1,0 +1,5 @@
+{
+  "name": "70mai Log Analyzer",
+  "description": "A web-based diagnostic tool for analyzing 70mai dashcam logs and firmware.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 1);
+}
+
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  header, footer, .print\:hidden, #pdf-button-container, #tab-navigation {
+    display: none !important;
+  }
+  #report-content {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .print\:flex {
+    display: flex !important;
+  }
+  .bg-white {
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Force all tabs to display except raw log */
+  #tabs-content-container > div {
+    display: block !important;
+    page-break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+
+  #tab-raw {
+    display: none !important;
+  }
+
+  /* Ensure background colors print */
+  .bg-emerald-50 { background-color: #ecfdf5 !important; }
+  .bg-red-50 { background-color: #fef2f2 !important; }
+  .bg-amber-50 { background-color: #fffbeb !important; }
+  .bg-blue-50 { background-color: #eff6ff !important; }
+  .bg-slate-50 { background-color: #f8fafc !important; }
+  .bg-slate-900 { background-color: #0f172a !important; color: white !important; }
+  
+  /* Prevent page breaks inside cards */
+  .rounded-2xl, .rounded-3xl {
+    page-break-inside: avoid;
+  }
+}
