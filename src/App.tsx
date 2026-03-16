@@ -4,8 +4,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { SummitEngine } from './services/analyzer';
 import { AnalysisReport, DiagnosticResult, HardwareTestRecord, KnowledgeBaseFaq, KnowledgeBaseLink } from './types';
 import { FIRMWARE_DB } from './config/firmwares';
-import { CustomFirmware, saveCustomFirmware, getCustomFirmwares, getCustomFirmwareBlob, deleteCustomFirmware, RegisteredDevice, saveRegisteredDevice, getRegisteredDevices, deleteRegisteredDevice, saveHardwareTest, getHardwareTests, deleteHardwareTest, saveKbFaq, getKbFaqs, deleteKbFaq, saveKbLink, getKbLinks, deleteKbLink } from './services/db';
-
+import { 
+  CustomFirmware, saveCustomFirmware, getCustomFirmwares, getCustomFirmwareBlob, deleteCustomFirmware, 
+  RegisteredDevice, saveRegisteredDevice, getRegisteredDevices, deleteRegisteredDevice, 
+  saveHardwareTest, getHardwareTests, deleteHardwareTest, 
+  saveKbFaq, getKbFaqs, deleteKbFaq, saveKbLink, getKbLinks, deleteKbLink, 
+  servisKaydiniOlustur, 
+} from './services/db';
 const engine = new SummitEngine();
 
 export default function App() {
@@ -542,6 +547,7 @@ export default function App() {
       }
     }
   };
+   
 
   const handleClearSDCard = async () => {
     if (!sdHandle) return;
@@ -565,6 +571,7 @@ export default function App() {
       setFlashMessage('Temizleme hatası: ' + e.message);
     }
   };
+
 
   const handleFlashFirmware = async () => {
     if (!sdHandle || !selectedFwId) return;
@@ -618,6 +625,39 @@ export default function App() {
     if (score >= 70) return 'text-blue-500';
     if (score >= 40) return 'text-amber-500';
     return 'text-red-500';
+  };
+
+  // --- AURA CLOUD (BULUT) VE SD KART BİRLEŞTİRİCİ MOTOR ---
+  const handleStartServiceProcess = async () => {
+    // 1. Önce kontrolleri yap
+    if (!sdHandle || !selectedFwId) {
+      alert("Lütfen önce model ve SD Kart seçimi yapın!");
+      return;
+    }
+
+    let fw: any = FIRMWARE_DB.find(f => f.id === selectedFwId) || customFws.find(f => f.id === selectedFwId);
+    let fwName = fw ? fw.name : "Özel Yazılım";
+
+    try {
+      // 2. SUPABASE'E (BULUTA) SERVİS FİŞİNİ KES
+      setFlashState('downloading');
+      setFlashMessage('Aura Cloud veritabanına kayıt işleniyor...');
+
+      
+
+      // 3. EĞER CHECKBOX SEÇİLİYSE SENİN FORMAT MOTORUNU ÇALIŞTIR
+      if (servisFormat) {
+        await handleClearSDCard();
+        // Eğer kullanıcı Format sırasında "İptal"e basarsa veya hata olursa state değişir.
+      }
+
+      // 4. SON OLARAK SENİN KUSURSUZ YAZILIM MOTORUNU ÇALIŞTIR
+      await handleFlashFirmware();
+
+    } catch (e: any) {
+      setFlashState('error');
+      setFlashMessage("İşlem Hatası: " + e.message);
+    }
   };
 
   const getHealthBg = (score: number) => {

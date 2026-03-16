@@ -1,3 +1,43 @@
+import { createClient } from '@supabase/supabase-js';
+import { HardwareTestRecord, KnowledgeBaseFaq, KnowledgeBaseLink } from '../types';
+
+// ==========================================
+// 1. SUPABASE (BULUT) BAĞLANTISI VE AYARLARI
+// ==========================================
+const supabaseUrl = 'https://hcuqlnuattpwdnfzioim.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdXFsbnVhdHRwd2RuZnppb2ltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODYwMzIsImV4cCI6MjA4ODk2MjAzMn0.6_A70JXod3bF3Elqhjz33FffzRYCijh8CTVZr4FaBUI';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export interface ServisFisi {
+  device_model: string;
+  serial_number: string;
+  complaint: string;
+  physical_condition: string;
+  sd_drive: string;
+  firmware_version: string;
+  format_sd: boolean;
+  change_region: boolean;
+  clear_logs: boolean;
+  technician_note: string;
+}
+
+export async function servisKaydiniOlustur(fisVerisi: ServisFisi) {
+  const { data, error } = await supabase
+    .from('service_tickets')
+    .insert([fisVerisi])
+    .select();
+
+  if (error) {
+    console.error("Aura Cloud'a yazılırken hata oluştu:", error.message);
+    throw error;
+  }
+  return data;
+}
+
+// ==========================================
+// 2. YEREL VERİTABANI (INDEXEDDB) ARAYÜZLERİ
+// ==========================================
 export interface CustomFirmware {
   id: string;
   name: string;
@@ -15,8 +55,9 @@ export interface RegisteredDevice {
   wifiMac: string;
 }
 
-import { HardwareTestRecord, KnowledgeBaseFaq, KnowledgeBaseLink } from '../types';
-
+// ==========================================
+// 3. INDEXEDDB SABİTLERİ VE KURULUMU
+// ==========================================
 const DB_NAME = 'SummitAdminDB';
 const STORE_NAME = 'custom_firmwares';
 const DEVICES_STORE = 'registered_devices';
@@ -50,6 +91,9 @@ export const initDB = (): Promise<IDBDatabase> => {
   });
 };
 
+// ==========================================
+// 4. YEREL DB İŞLEMLERİ (CUSTOM FIRMWARE)
+// ==========================================
 export const saveCustomFirmware = async (fw: CustomFirmware): Promise<boolean> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -98,6 +142,9 @@ export const deleteCustomFirmware = async (id: string): Promise<boolean> => {
   });
 };
 
+// ==========================================
+// 5. YEREL DB İŞLEMLERİ (REGISTERED DEVICES)
+// ==========================================
 export const saveRegisteredDevice = async (device: RegisteredDevice): Promise<boolean> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -131,7 +178,9 @@ export const deleteRegisteredDevice = async (id: string): Promise<boolean> => {
   });
 };
 
-// Hardware Tests
+// ==========================================
+// 6. YEREL DB İŞLEMLERİ (HARDWARE TESTS)
+// ==========================================
 export const saveHardwareTest = async (test: HardwareTestRecord): Promise<boolean> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -165,7 +214,9 @@ export const deleteHardwareTest = async (id: string): Promise<boolean> => {
   });
 };
 
-// Knowledge Base FAQs
+// ==========================================
+// 7. YEREL DB İŞLEMLERİ (KNOWLEDGE BASE FAQS)
+// ==========================================
 export const saveKbFaq = async (faq: KnowledgeBaseFaq): Promise<boolean> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -199,7 +250,9 @@ export const deleteKbFaq = async (id: string): Promise<boolean> => {
   });
 };
 
-// Knowledge Base Links
+// ==========================================
+// 8. YEREL DB İŞLEMLERİ (KNOWLEDGE BASE LINKS)
+// ==========================================
 export const saveKbLink = async (link: KnowledgeBaseLink): Promise<boolean> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
